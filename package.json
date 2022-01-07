@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "Tic-Tac-Toe",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
