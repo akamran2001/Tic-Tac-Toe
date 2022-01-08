@@ -1,12 +1,17 @@
+import { faMusic } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import "./App.css";
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      player: "x",
+      player: "X",
+      squares: Array(9).fill(""),
+      gameOver: false,
     };
   }
+
   colorBoard() {
     const board = document.getElementById("board");
     const rows = Array.from(board.rows);
@@ -24,56 +29,124 @@ export default class App extends React.Component {
       return null;
     });
   }
-  play(cell, player) {
+
+  gameUpdate() {
+    const lines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+    let win = false;
+    lines.find((indices) => {
+      const [a, b, c] = indices;
+      const line = this.state.squares
+        .slice(a, a + 1)
+        .concat(this.state.squares.slice(b, b + 1))
+        .concat(this.state.squares.slice(c, c + 1));
+      win = line.every((item) => {
+        return item === line[0] && line[0] !== "";
+      });
+      return win;
+    });
+    return win;
+  }
+
+  play(cell) {
     const clicked = cell.getAttribute("clicked");
-    if (clicked === "false") {
+    if (clicked === "false" && this.state.gameOver !== true) {
       cell.setAttribute("clicked", "true");
-      cell.innerHTML = `<h1>${player}</h1>`;
-      const next = player === "x" ? "o" : "x";
-      this.setState({ player: next });
+      this.setState({
+        squares: this.state.squares.map((item, index) => {
+          return index === parseInt(cell.id) ? this.state.player : item;
+        }),
+      });
+      this.setState({ gameOver: this.gameUpdate() });
+      if (!this.state.gameOver) {
+        this.setState({ player: this.state.player === "X" ? "O" : "X" });
+      }
     }
   }
-  cellAssign(player) {
+  cellAssign() {
     const cells = Array.from(document.getElementsByTagName("td"));
-    cells.map((cell, index) => {
+    cells.forEach((cell, index) => {
       cell.id = String(index);
       cell.setAttribute("clicked", "false");
-      cell.addEventListener("click", (e) => {
-        this.play(e.target, player);
-      });
+      cell.addEventListener(
+        "click",
+        (e) => {
+          this.play(e.target);
+        },
+        false
+      );
     });
     return null;
   }
+  playAudio() {
+    const audio = document.querySelector("audio");
+    if (audio.paused) {
+      audio.volume = 0.2;
+      audio.play();
+    } else {
+      audio.pause();
+    }
+  }
   componentDidMount() {
     this.colorBoard();
-    this.cellAssign(this.state.player);
-  }
-  componentDidUpdate() {
-    this.cellAssign(this.state.player);
+    this.cellAssign();
   }
   render() {
     return (
       <div className="App">
-        <h1>Tic Tac Toe</h1>
+        <div className="header" onClick={this.playAudio}>
+          <h1>Tic Tac Toe</h1>
+          <p>
+            <FontAwesomeIcon icon={faMusic} />
+          </p>
+        </div>
+
         <table id="board">
           <tbody>
             <tr>
-              <td className="cell"></td>
-              <td className="cell"></td>
-              <td className="cell"></td>
+              <td>
+                <h1>{this.state.squares[0]}</h1>
+              </td>
+              <td>
+                <h1>{this.state.squares[1]}</h1>
+              </td>
+              <td>
+                <h1>{this.state.squares[2]}</h1>
+              </td>
             </tr>
             <tr>
-              <td className="cell"></td>
-              <td className="cell"></td>
-              <td className="cell"></td>
+              <td>
+                <h1>{this.state.squares[3]}</h1>
+              </td>
+              <td>
+                <h1>{this.state.squares[4]}</h1>
+              </td>
+              <td>
+                <h1>{this.state.squares[5]}</h1>
+              </td>
             </tr>
             <tr>
-              <td className="cell"></td>
-              <td className="cell"></td>
-              <td className="cell"></td>
+              <td>
+                <h1>{this.state.squares[6]}</h1>
+              </td>
+              <td>
+                <h1>{this.state.squares[7]}</h1>
+              </td>
+              <td>
+                <h1>{this.state.squares[8]}</h1>
+              </td>
             </tr>
           </tbody>
         </table>
+        <h1>{this.state.gameOver ? `Winner: ${this.state.player}` : ""}</h1>
       </div>
     );
   }
