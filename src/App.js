@@ -11,7 +11,6 @@ export default class App extends React.Component {
       gameOver: false,
     };
   }
-
   colorBoard() {
     const board = document.getElementById("board");
     const rows = Array.from(board.rows);
@@ -29,7 +28,6 @@ export default class App extends React.Component {
       return null;
     });
   }
-
   gameUpdate() {
     const lines = [
       [0, 1, 2],
@@ -42,6 +40,10 @@ export default class App extends React.Component {
       [2, 4, 6],
     ];
     let win = false;
+    let boardFull =
+      this.state.squares.filter((item) => {
+        return item === "";
+      }).length === 0;
     lines.find((indices) => {
       const [a, b, c] = indices;
       const line = this.state.squares
@@ -53,9 +55,11 @@ export default class App extends React.Component {
       });
       return win;
     });
-    return win;
+    if (boardFull && !win) {
+      this.setState({ player: "Tie" });
+    }
+    this.setState({ gameOver: win || boardFull });
   }
-
   play(cell) {
     const clicked = cell.getAttribute("clicked");
     if (clicked === "false" && this.state.gameOver !== true) {
@@ -65,7 +69,7 @@ export default class App extends React.Component {
           return index === parseInt(cell.id) ? this.state.player : item;
         }),
       });
-      this.setState({ gameOver: this.gameUpdate() });
+      this.gameUpdate();
       if (!this.state.gameOver) {
         this.setState({ player: this.state.player === "X" ? "O" : "X" });
       }
@@ -91,21 +95,46 @@ export default class App extends React.Component {
     if (audio.paused) {
       audio.volume = 0.2;
       audio.play();
+      document.getElementById("audio-msg").className = "invisible";
     } else {
       audio.pause();
+      document.getElementById("audio-msg").className = "mono";
     }
+  }
+  gameOverMsg() {
+    return this.state.player === "Tie"
+      ? "Tie"
+      : `Winner:  ${this.state.player}`;
   }
   componentDidMount() {
     this.colorBoard();
     this.cellAssign();
   }
   render() {
+    const end = (
+      <div id="end">
+        <h1>{this.gameOverMsg()}</h1>
+        <button
+          onClick={() => {
+            window.location.reload();
+          }}
+        >
+          Play Again
+        </button>
+      </div>
+    );
+
     return (
       <div className="App">
-        <div className="header" onClick={this.playAudio}>
-          <h1>Tic Tac Toe</h1>
-          <p>
-            <FontAwesomeIcon icon={faMusic} />
+        <div onClick={this.playAudio}>
+          <div className="header">
+            <h1>Tic Tac Toe</h1>
+            <p>
+              <FontAwesomeIcon icon={faMusic} />
+            </p>
+          </div>
+          <p id="audio-msg" className="mono">
+            Click here to play music
           </p>
         </div>
 
@@ -146,7 +175,11 @@ export default class App extends React.Component {
             </tr>
           </tbody>
         </table>
-        <h1>{this.state.gameOver ? `Winner: ${this.state.player}` : ""}</h1>
+        {this.state.gameOver ? end : ""}
+        <h3 className="mono">
+          Made by{" "}
+          <a href="https://github.com/akamran2001/Tic-Tac-Toe">Ahmed Kamran</a>
+        </h3>
       </div>
     );
   }
