@@ -46,10 +46,11 @@ export default class App extends React.Component {
       }).length === 0;
     lines.find((indices) => {
       const [a, b, c] = indices;
-      const line = this.state.squares
-        .slice(a, a + 1)
-        .concat(this.state.squares.slice(b, b + 1))
-        .concat(this.state.squares.slice(c, c + 1));
+      const line = [
+        this.state.squares[a],
+        this.state.squares[b],
+        this.state.squares[c],
+      ];
       win = line.every((item) => {
         return item === line[0] && line[0] !== "";
       });
