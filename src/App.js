@@ -11,23 +11,6 @@ export default class App extends React.Component {
       gameOver: false,
     };
   }
-  colorBoard() {
-    const board = document.getElementById("board");
-    const rows = Array.from(board.rows);
-    const colorMap = [
-      ["red", "green", "blue"],
-      ["green", "blue", "red"],
-      ["blue", "red", "green"],
-    ];
-    rows.map((tr, i) => {
-      const cols = Array.from(tr.cells);
-      cols.map((cell, j) => {
-        cell.className = colorMap[i][j];
-        return null;
-      });
-      return null;
-    });
-  }
   gameUpdate() {
     const lines = [
       [0, 1, 2],
@@ -56,41 +39,32 @@ export default class App extends React.Component {
       });
       return win;
     });
+    const switchPlayer = () => {
+      if (!this.state.gameOver) {
+        this.setState({ player: this.state.player === "X" ? "O" : "X" });
+      }
+    };
     if (boardFull && !win) {
-      this.setState({ player: "Tie" });
+      this.setState({ player: "Tie" }, switchPlayer);
     }
-    this.setState({ gameOver: win || boardFull });
+    this.setState({ gameOver: win || boardFull }, switchPlayer);
   }
+
   play(cell) {
     const clicked = cell.getAttribute("clicked");
     if (clicked === "false" && this.state.gameOver !== true) {
       cell.setAttribute("clicked", "true");
-      this.setState({
-        squares: this.state.squares.map((item, index) => {
-          return index === parseInt(cell.id) ? this.state.player : item;
-        }),
-      });
-      this.gameUpdate();
-      if (!this.state.gameOver) {
-        this.setState({ player: this.state.player === "X" ? "O" : "X" });
-      }
+      this.setState(
+        {
+          squares: this.state.squares.map((item, index) => {
+            return index === parseInt(cell.id) ? this.state.player : item;
+          }),
+        },
+        this.gameUpdate
+      );
     }
   }
-  cellAssign() {
-    const cells = Array.from(document.getElementsByTagName("td"));
-    cells.forEach((cell, index) => {
-      cell.id = String(index);
-      cell.setAttribute("clicked", "false");
-      cell.addEventListener(
-        "click",
-        (e) => {
-          this.play(e.target);
-        },
-        false
-      );
-    });
-    return null;
-  }
+
   playAudio() {
     const audio = document.querySelector("audio");
     if (audio.paused) {
@@ -107,24 +81,54 @@ export default class App extends React.Component {
       ? "Tie"
       : `Winner:  ${this.state.player}`;
   }
-  componentDidMount() {
-    this.colorBoard();
-    this.cellAssign();
+  rows_fill(start, end) {
+    const colors = [
+      "red",
+      "green",
+      "blue",
+      "green",
+      "blue",
+      "red",
+      "blue",
+      "red",
+      "green",
+    ];
+    return Array.from(Array(10).keys())
+      .slice(start, end)
+      .map((num) => {
+        return (
+          <td
+            key={num}
+            className={colors[num]}
+            onClick={(e) => {
+              this.play(e.target);
+            }}
+            clicked={this.state.squares[num] === "" ? "false" : "true"}
+            id={String(num)}
+          >
+            <h1>{this.state.squares[num]}</h1>
+          </td>
+        );
+      });
   }
+
   render() {
     const end = (
       <div id="end">
         <h1>{this.gameOverMsg()}</h1>
         <button
           onClick={() => {
-            window.location.reload();
+            this.setState({
+              player: "X",
+              squares: Array(9).fill(""),
+              gameOver: false,
+            });
           }}
         >
           Play Again
         </button>
       </div>
     );
-
     return (
       <div className="App">
         <div onClick={this.playAudio}>
@@ -138,42 +142,11 @@ export default class App extends React.Component {
             Click here to play music
           </p>
         </div>
-
         <table id="board">
           <tbody>
-            <tr>
-              <td>
-                <h1>{this.state.squares[0]}</h1>
-              </td>
-              <td>
-                <h1>{this.state.squares[1]}</h1>
-              </td>
-              <td>
-                <h1>{this.state.squares[2]}</h1>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <h1>{this.state.squares[3]}</h1>
-              </td>
-              <td>
-                <h1>{this.state.squares[4]}</h1>
-              </td>
-              <td>
-                <h1>{this.state.squares[5]}</h1>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <h1>{this.state.squares[6]}</h1>
-              </td>
-              <td>
-                <h1>{this.state.squares[7]}</h1>
-              </td>
-              <td>
-                <h1>{this.state.squares[8]}</h1>
-              </td>
-            </tr>
+            <tr>{this.rows_fill(0, 3)}</tr>
+            <tr>{this.rows_fill(3, 6)}</tr>
+            <tr>{this.rows_fill(6, 9)}</tr>
           </tbody>
         </table>
         {this.state.gameOver ? end : ""}
