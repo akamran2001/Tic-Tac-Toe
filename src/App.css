@@ -11,7 +11,11 @@ body,
 .App {
   text-align: center;
 }
+body {
+  overflow: hidden;
+}
 .header,
+#bottom,
 #end {
   color: black;
   display: flex;
@@ -28,21 +32,15 @@ body,
 }
 .header h1,
 #end h1 {
-  user-select: none;
   margin-right: 0.5em;
+  margin-left: 0.5em;
 }
 table {
-  margin: 1rem auto;
-  width: 75vh;
-  height: 75vh;
+  margin: 0.1vh auto;
+  width: 65vh;
+  height: 65vh;
 }
-@media only screen and (max-width: 600px) {
-  table {
-    margin: 1rem auto;
-    width: 100vw;
-    height: 100vw;
-  }
-}
+
 td {
   width: 33%;
   height: 33%;
@@ -94,6 +92,8 @@ button:hover {
 
 .mono {
   font-family: monospace;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
 }
 a {
   color: rgb(246, 52, 27);
@@ -101,4 +101,18 @@ a {
 }
 .invisible {
   display: none;
+}
+
+@media only screen and (max-width: 600px) {
+  table {
+    margin: 0.1vw auto;
+    width: 90vw;
+    height: 90vw;
+  }
+  #bottom {
+    display: block;
+  }
+  td h1 {
+    font-size: 2em;
+  }
 }

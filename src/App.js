@@ -149,11 +149,15 @@ export default class App extends React.Component {
             <tr>{this.rows_fill(6, 9)}</tr>
           </tbody>
         </table>
-        {this.state.gameOver ? end : ""}
-        <h3 className="mono">
-          Made by{" "}
-          <a href="https://github.com/akamran2001/Tic-Tac-Toe">Ahmed Kamran</a>
-        </h3>
+        <div id="bottom">
+          {this.state.gameOver ? end : ""}
+          <h3 className="mono">
+            Made by{" "}
+            <a href="https://github.com/akamran2001/Tic-Tac-Toe">
+              Ahmed Kamran
+            </a>
+          </h3>
+        </div>
       </div>
     );
   }
