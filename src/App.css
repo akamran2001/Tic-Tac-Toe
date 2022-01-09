@@ -64,6 +64,9 @@ td h1 {
 .blue {
   background-color: #67bbe2f3;
 }
+.win {
+  background-color: #ffffff;
+}
 button {
   display: inline-block;
   outline: 0;

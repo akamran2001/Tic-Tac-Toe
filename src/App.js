@@ -9,6 +9,7 @@ export default class App extends React.Component {
       player: "X",
       squares: Array(9).fill(""),
       gameOver: false,
+      win_line: [],
     };
   }
 
@@ -39,18 +40,18 @@ export default class App extends React.Component {
     /**
      *  A player has won if they get the same character to fill an entire line
      */
-    const win =
-      lines.find((indices) => {
-        const [a, b, c] = indices;
-        const line = [
-          this.state.squares[a],
-          this.state.squares[b],
-          this.state.squares[c],
-        ];
-        return line.every((item) => {
-          return item === line[0] && line[0] !== "";
-        });
-      }) !== undefined;
+    const winner = lines.find((indices) => {
+      const [a, b, c] = indices;
+      const line = [
+        this.state.squares[a],
+        this.state.squares[b],
+        this.state.squares[c],
+      ];
+      return line.every((item) => {
+        return item === line[0] && line[0] !== "";
+      });
+    });
+    const win = winner !== undefined;
     /**
      * The winning player is "Tie" if the board is full and no one has won
      * Game end when someone has won or the board is full
@@ -60,6 +61,7 @@ export default class App extends React.Component {
       {
         player: boardFull && !win ? "Tie" : this.state.player,
         gameOver: win || boardFull,
+        win_line: win ? winner : this.state.win_line,
       },
       () => {
         if (!this.state.gameOver) {
@@ -110,7 +112,7 @@ export default class App extends React.Component {
         return (
           <td
             key={num}
-            className={colors[num]}
+            className={this.state.win_line.includes(num) ? "win" : colors[num]}
             onClick={(e) => {
               this.play(e.target);
             }}
@@ -149,6 +151,7 @@ export default class App extends React.Component {
               player: "X",
               squares: Array(9).fill(""),
               gameOver: false,
+              win_line: [],
             });
           }}
         >
