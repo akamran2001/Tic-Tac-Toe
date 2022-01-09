@@ -83,14 +83,14 @@ export default class App extends React.Component {
   }
   rows_fill(start, end) {
     const colors = [
-      "red",
       "green",
+      "red",
+      "red",
       "blue",
       "green",
-      "blue",
       "red",
       "blue",
-      "red",
+      "blue",
       "green",
     ];
     return Array.from(Array(10).keys())
