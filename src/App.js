@@ -11,7 +11,14 @@ export default class App extends React.Component {
       gameOver: false,
     };
   }
+
+  /**
+   * Update the state of the game after every input
+   */
   gameUpdate() {
+    /**
+     * Cells which indicate a vertical, horizontal, or disgonal line
+     */
     const lines = [
       [0, 1, 2],
       [3, 4, 5],
@@ -22,34 +29,49 @@ export default class App extends React.Component {
       [0, 4, 8],
       [2, 4, 6],
     ];
-    let win = false;
-    let boardFull =
+    /**
+     * Board is full when 0 squares are ""
+     */
+    const boardFull =
       this.state.squares.filter((item) => {
         return item === "";
       }).length === 0;
-    lines.find((indices) => {
-      const [a, b, c] = indices;
-      const line = [
-        this.state.squares[a],
-        this.state.squares[b],
-        this.state.squares[c],
-      ];
-      win = line.every((item) => {
-        return item === line[0] && line[0] !== "";
-      });
-      return win;
-    });
-    const switchPlayer = () => {
-      if (!this.state.gameOver) {
-        this.setState({ player: this.state.player === "X" ? "O" : "X" });
+    /**
+     *  A player has won if they get the same character to fill an entire line
+     */
+    const win =
+      lines.find((indices) => {
+        const [a, b, c] = indices;
+        const line = [
+          this.state.squares[a],
+          this.state.squares[b],
+          this.state.squares[c],
+        ];
+        return line.every((item) => {
+          return item === line[0] && line[0] !== "";
+        });
+      }) !== undefined;
+    /**
+     * The winning player is "Tie" if the board is full and no one has won
+     * Game end when someone has won or the board is full
+     * The next player gets picked as the opposite player if the game isn't over yet
+     */
+    this.setState(
+      {
+        player: boardFull && !win ? "Tie" : this.state.player,
+        gameOver: win || boardFull,
+      },
+      () => {
+        if (!this.state.gameOver) {
+          this.setState({ player: this.state.player === "X" ? "O" : "X" });
+        }
       }
-    };
-    if (boardFull && !win) {
-      this.setState({ player: "Tie" }, switchPlayer);
-    }
-    this.setState({ gameOver: win || boardFull }, switchPlayer);
+    );
   }
-
+  /**
+   * Handle the user clicking on a cell to input their move
+   * @param  {"event.target"} cell The target element that registered this onClick event
+   */
   play(cell) {
     const clicked = cell.getAttribute("clicked");
     if (clicked === "false" && this.state.gameOver !== true) {
@@ -64,23 +86,12 @@ export default class App extends React.Component {
       );
     }
   }
-
-  playAudio() {
-    const audio = document.querySelector("audio");
-    if (audio.paused) {
-      audio.volume = 0.2;
-      audio.play();
-      document.getElementById("audio-msg").className = "invisible";
-    } else {
-      audio.pause();
-      document.getElementById("audio-msg").className = "mono";
-    }
-  }
-  gameOverMsg() {
-    return this.state.player === "Tie"
-      ? "Tie"
-      : `Winner:  ${this.state.player}`;
-  }
+  /**
+   * Create the table data for the board
+   * @param  {int} start - Cell # to start from
+   * @param  {int} end - Cell # to end (exclusive)
+   * @returns JSX elements of specified cell numbers
+   */
   rows_fill(start, end) {
     const colors = [
       "green",
@@ -112,10 +123,26 @@ export default class App extends React.Component {
       });
   }
 
+  /**
+   * Play and pause background music
+   */
+  playAudio() {
+    const audio = document.querySelector("audio");
+    if (audio.paused) {
+      audio.volume = 0.2;
+      audio.play();
+      document.getElementById("audio-msg").className = "invisible";
+    } else {
+      audio.pause();
+      document.getElementById("audio-msg").className = "mono";
+    }
+  }
   render() {
+    const gameOverMsg =
+      this.state.player === "Tie" ? "Tie" : `Winner:  ${this.state.player}`;
     const end = (
       <div id="end">
-        <h1>{this.gameOverMsg()}</h1>
+        <h1>{gameOverMsg}</h1>
         <button
           onClick={() => {
             this.setState({
@@ -150,14 +177,26 @@ export default class App extends React.Component {
           </tbody>
         </table>
         <div id="bottom">
-          {this.state.gameOver ? end : ""}
-          <h3 className="mono">
-            Made by{" "}
-            <a href="https://github.com/akamran2001/Tic-Tac-Toe">
-              Ahmed Kamran
-            </a>
-          </h3>
+          {this.state.gameOver ? end : <h1>Player: {this.state.player}</h1>}
         </div>
+        <h3 className="mono">
+          Made by
+          <a
+            href="https://github.com/akamran2001/Tic-Tac-Toe"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {" Ahmed Kamran "}
+          </a>
+          {"Music: "}
+          <a
+            href="https://chll.to/0ac21dd1"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Aiguille - Day and Night
+          </a>
+        </h3>
       </div>
     );
   }
