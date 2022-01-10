@@ -10,7 +10,13 @@ export default class App extends React.Component {
       squares: Array(9).fill(""),
       gameOver: false,
       win_line: [],
+      audio_play: true,
     };
+    this.audio = new Audio("https://mp3.chillhop.com/serve.php/?mp3=9272");
+    this.audio.loop = true;
+    this.playAudio = this.playAudio.bind(this);
+    this.newGame = this.newGame.bind(this);
+    this.play = this.play.bind(this);
   }
 
   /**
@@ -72,9 +78,10 @@ export default class App extends React.Component {
   }
   /**
    * Handle the user clicking on a cell to input their move
-   * @param  {"event.target"} cell The target element that registered this onClick event
+   * @param  {"event"} e The onClick event
    */
-  play(cell) {
+  play(e) {
+    const cell = e.target;
     const clicked = cell.getAttribute("clicked");
     if (clicked === "false" && this.state.gameOver !== true) {
       cell.setAttribute("clicked", "true");
@@ -113,9 +120,7 @@ export default class App extends React.Component {
           <td
             key={num}
             className={this.state.win_line.includes(num) ? "win" : colors[num]}
-            onClick={(e) => {
-              this.play(e.target);
-            }}
+            onClick={this.play}
             clicked={this.state.squares[num] === "" ? "false" : "true"}
             id={String(num)}
           >
@@ -129,15 +134,22 @@ export default class App extends React.Component {
    * Play and pause background music
    */
   playAudio() {
-    const audio = document.querySelector("audio");
-    if (audio.paused) {
-      audio.volume = 0.2;
-      audio.play();
-      document.getElementById("audio-msg").className = "invisible";
+    if (this.audio.paused) {
+      this.audio.volume = 0.2;
+      this.audio.play();
+      this.setState({ audio_play: true });
     } else {
-      audio.pause();
-      document.getElementById("audio-msg").className = "mono";
+      this.audio.pause();
+      this.setState({ audio_play: false });
     }
+  }
+  newGame() {
+    this.setState({
+      player: "X",
+      squares: Array(9).fill(""),
+      gameOver: false,
+      win_line: [],
+    });
   }
   render() {
     const gameOverMsg =
@@ -145,18 +157,7 @@ export default class App extends React.Component {
     const end = (
       <div id="end">
         <h1>{gameOverMsg}</h1>
-        <button
-          onClick={() => {
-            this.setState({
-              player: "X",
-              squares: Array(9).fill(""),
-              gameOver: false,
-              win_line: [],
-            });
-          }}
-        >
-          Play Again
-        </button>
+        <button onClick={this.newGame}>Play Again</button>
       </div>
     );
     return (
@@ -168,7 +169,10 @@ export default class App extends React.Component {
               <FontAwesomeIcon icon={faMusic} />
             </p>
           </div>
-          <p id="audio-msg" className="mono">
+          <p
+            id="audio-msg"
+            className={this.state.audio_play ? "invisible" : "mono"}
+          >
             Click here to play music
           </p>
         </div>
