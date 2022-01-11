@@ -10,7 +10,7 @@ export default class App extends React.Component {
       squares: Array(9).fill(""),
       gameOver: false,
       win_line: [],
-      audio_play: true,
+      audio_play: false,
     };
     this.audio = new Audio("https://mp3.chillhop.com/serve.php/?mp3=9272");
     this.audio.loop = true;
