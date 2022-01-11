@@ -22,7 +22,7 @@ export default class App extends React.Component {
   /**
    * Update the state of the game after every input
    */
-  gameUpdate() {
+  async gameUpdate() {
     /**
      * Cells which indicate a vertical, horizontal, or disgonal line
      */
@@ -63,36 +63,30 @@ export default class App extends React.Component {
      * Game end when someone has won or the board is full
      * The next player gets picked as the opposite player if the game isn't over yet
      */
-    this.setState(
-      {
-        player: boardFull && !win ? "Tie" : this.state.player,
-        gameOver: win || boardFull,
-        win_line: win ? winner : this.state.win_line,
-      },
-      () => {
-        if (!this.state.gameOver) {
-          this.setState({ player: this.state.player === "X" ? "O" : "X" });
-        }
-      }
-    );
+    await this.setState({
+      player: boardFull && !win ? "Tie" : this.state.player,
+      gameOver: win || boardFull,
+      win_line: win ? winner : this.state.win_line,
+    });
+    if (!this.state.gameOver) {
+      this.setState({ player: this.state.player === "X" ? "O" : "X" });
+    }
   }
   /**
    * Handle the user clicking on a cell to input their move
    * @param  {"event"} e The onClick event
    */
-  play(e) {
+  async play(e) {
     const cell = e.target;
     const clicked = cell.getAttribute("clicked");
     if (clicked === "false" && this.state.gameOver !== true) {
       cell.setAttribute("clicked", "true");
-      this.setState(
-        {
-          squares: this.state.squares.map((item, index) => {
-            return index === parseInt(cell.id) ? this.state.player : item;
-          }),
-        },
-        this.gameUpdate
-      );
+      await this.setState({
+        squares: this.state.squares.map((item, index) => {
+          return index === parseInt(cell.id) ? this.state.player : item;
+        }),
+      });
+      this.gameUpdate();
     }
   }
   /**
