@@ -118,4 +118,7 @@ a {
   td h1 {
     font-size: 2em;
   }
+  .header:hover {
+    color: black;
+  }
 }

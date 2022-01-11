@@ -69,7 +69,7 @@ export default class App extends React.Component {
       win_line: win ? winner : this.state.win_line,
     });
     if (!this.state.gameOver) {
-      this.setState({ player: this.state.player === "X" ? "O" : "X" });
+      this.setState({ player: this.state.player === "X" ? "O" : "X" }); //Only switch player after state of game set
     }
   }
   /**
@@ -86,7 +86,7 @@ export default class App extends React.Component {
           return index === parseInt(cell.id) ? this.state.player : item;
         }),
       });
-      this.gameUpdate();
+      this.gameUpdate(); //Only update game after state of board set
     }
   }
   /**
