@@ -1,5 +1,6 @@
 import { faMusic } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { range, uniq, without } from "lodash";
 import React from "react";
 import "./App.css";
 export default class App extends React.Component {
@@ -24,25 +25,23 @@ export default class App extends React.Component {
    */
   async gameUpdate() {
     /**
-     * Cells which indicate a vertical, horizontal, or disgonal line
+     * Cells which indicate a vertical, horizontal, or diagonal line
      */
     const lines = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
+      range(0, 3),
+      range(3, 6),
+      range(6, 9),
+      range(0, 9, 3),
+      range(1, 9, 3),
+      range(2, 9, 3),
+      range(0, 9, 4),
+      range(2, 8, 2),
     ];
     /**
-     * Board is full when 0 squares are ""
+     * Board is full when none of the 9 squares are ""
      */
-    const boardFull =
-      this.state.squares.filter((item) => {
-        return item === "";
-      }).length === 0;
+
+    const boardFull = without(this.state.squares, "").length === 9;
     /**
      *  A player has won if they get the same character to fill an entire line
      */
@@ -53,9 +52,8 @@ export default class App extends React.Component {
         this.state.squares[b],
         this.state.squares[c],
       ];
-      return line.every((item) => {
-        return item === line[0] && line[0] !== "";
-      });
+      const noDup = uniq(line);
+      return noDup.length === 1 && noDup[0] !== "";
     });
     const win = winner !== undefined;
     /**
@@ -107,21 +105,19 @@ export default class App extends React.Component {
       "blue",
       "green",
     ];
-    return Array.from(Array(10).keys())
-      .slice(start, end)
-      .map((num) => {
-        return (
-          <td
-            key={num}
-            className={this.state.win_line.includes(num) ? "win" : colors[num]}
-            onClick={this.play}
-            clicked={this.state.squares[num] === "" ? "false" : "true"}
-            id={String(num)}
-          >
-            <h1>{this.state.squares[num]}</h1>
-          </td>
-        );
-      });
+    return range(start, end).map((num) => {
+      return (
+        <td
+          key={num}
+          className={this.state.win_line.includes(num) ? "win" : colors[num]}
+          onClick={this.play}
+          clicked={this.state.squares[num] === "" ? "false" : "true"}
+          id={String(num)}
+        >
+          <h1>{this.state.squares[num]}</h1>
+        </td>
+      );
+    });
   }
 
   /**
