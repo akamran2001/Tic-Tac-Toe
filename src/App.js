@@ -69,13 +69,15 @@ export default class App extends React.Component {
    */
   async play(e) {
     const cell = e.target;
+    const cell_id = parseInt(cell.id);
     const clicked = cell.getAttribute("clicked");
     if (clicked === "false" && this.state.gameOver !== true) {
       cell.setAttribute("clicked", "true");
       await this.setState({
-        squares: this.state.squares.map((item, index) => {
-          return index === parseInt(cell.id) ? this.state.player : item;
-        }),
+        squares: this.state.squares
+          .slice(0, cell_id)
+          .concat(this.state.player) //Replace selected cell with player character
+          .concat(this.state.squares.slice(cell_id + 1)),
       });
       this.gameUpdate(); //Only update game after state of board set
     }
