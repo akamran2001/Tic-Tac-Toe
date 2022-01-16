@@ -27,16 +27,9 @@ export default class App extends React.Component {
     /**
      * Cells which indicate a vertical, horizontal, or diagonal line
      */
-    const lines = [
-      range(0, 3),
-      range(3, 6),
-      range(6, 9),
-      range(0, 9, 3),
-      range(1, 9, 3),
-      range(2, 9, 3),
-      range(0, 9, 4),
-      range(2, 8, 2),
-    ];
+    const lines = [range(0, 9, 4), range(2, 8, 2)];
+    [0, 3, 6].forEach((num) => lines.push(range(num, num + 3)));
+    [0, 1, 2].forEach((num) => lines.push(range(num, 9, 3)));
     /**
      * Board is full when none of the 9 squares are ""
      */
