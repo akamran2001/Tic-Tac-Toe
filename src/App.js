@@ -1,23 +1,29 @@
 import { faMusic } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { range, uniq, without } from "lodash";
+import { random, range, uniq, without } from "lodash";
 import React from "react";
 import "./App.css";
 export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      player: "X",
+      first: [true, false][random(0, 1, false)], //true = X, false = O
+      player: "",
       squares: Array(9).fill(""),
       gameOver: false,
       win_line: [],
       audio_play: false,
+      points: {
+        X: 0,
+        O: 0,
+      },
     };
     this.audio = new Audio("https://mp3.chillhop.com/serve.php/?mp3=9272");
     this.audio.loop = true;
     this.playAudio = this.playAudio.bind(this);
     this.newGame = this.newGame.bind(this);
     this.play = this.play.bind(this);
+    this.updatePoint = this.updatePoint.bind(this);
   }
 
   /**
@@ -59,8 +65,11 @@ export default class App extends React.Component {
       gameOver: win || boardFull,
       win_line: win ? winner : this.state.win_line,
     });
+
     if (!this.state.gameOver) {
       this.setState({ player: this.state.player === "X" ? "O" : "X" }); //Only switch player after state of game set
+    } else {
+      this.updatePoint();
     }
   }
   /**
@@ -130,11 +139,29 @@ export default class App extends React.Component {
   }
   newGame() {
     this.setState({
-      player: "X",
+      player: !this.state.first ? "X" : "O",
+      first: !this.state.first,
       squares: Array(9).fill(""),
       gameOver: false,
       win_line: [],
     });
+  }
+  updatePoint() {
+    this.setState({
+      points: {
+        X:
+          this.state.player == "X"
+            ? this.state.points.X + 1
+            : this.state.points.X,
+        O:
+          this.state.player == "O"
+            ? this.state.points.O + 1
+            : this.state.points.O,
+      },
+    });
+  }
+  componentDidMount() {
+    this.setState({ player: this.state.first ? "X" : "O" });
   }
   render() {
     const gameOverMsg =
@@ -168,8 +195,16 @@ export default class App extends React.Component {
             <tr>{this.rows_fill(6, 9)}</tr>
           </tbody>
         </table>
-        <div id="bottom">
-          {this.state.gameOver ? end : <h1>Player: {this.state.player}</h1>}
+        <div id="bottom" className="gc">
+          <div id="x-point" className="gi">
+            <h1>Player-X: {this.state.points.X}</h1>
+          </div>
+          <div id="player" className="gi">
+            {this.state.gameOver ? end : <h1>Current: {this.state.player}</h1>}
+          </div>
+          <div id="o-point" className="gi">
+            <h1>Player-O: {this.state.points.O}</h1>
+          </div>
         </div>
         <h3 className="mono">
           Made by
