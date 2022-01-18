@@ -20,16 +20,11 @@ export default class App extends React.Component {
     };
     this.audio = new Audio("https://mp3.chillhop.com/serve.php/?mp3=9272");
     this.audio.loop = true;
-    this.playAudio = this.playAudio.bind(this);
-    this.newGame = this.newGame.bind(this);
-    this.play = this.play.bind(this);
-    this.updatePoint = this.updatePoint.bind(this);
   }
-
   /**
    * Update the state of the game after every input
    */
-  async gameUpdate() {
+  gameUpdate = async () => {
     /**
      * Cells which indicate a vertical, horizontal, or diagonal line
      */
@@ -71,12 +66,12 @@ export default class App extends React.Component {
     } else {
       this.updatePoint();
     }
-  }
+  };
   /**
    * Handle the user clicking on a cell to input their move
    * @param  {"event"} e The onClick event
    */
-  async play(e) {
+  play = async (e) => {
     const cell = e.target;
     const cell_id = parseInt(cell.id);
     const clicked = cell.getAttribute("clicked");
@@ -90,14 +85,14 @@ export default class App extends React.Component {
       });
       this.gameUpdate(); //Only update game after state of board set
     }
-  }
+  };
   /**
    * Create the table data for the board
    * @param  {int} start - Cell # to start from
    * @param  {int} end - Cell # to end (exclusive)
    * @returns JSX elements of specified cell numbers
    */
-  rows_fill(start, end) {
+  rows_fill = (start, end) => {
     const colors = [
       "green",
       "red",
@@ -122,12 +117,11 @@ export default class App extends React.Component {
         </td>
       );
     });
-  }
-
+  };
   /**
    * Play and pause background music
    */
-  playAudio() {
+  playAudio = () => {
     if (this.audio.paused) {
       this.audio.volume = 0.2;
       this.audio.play();
@@ -136,8 +130,8 @@ export default class App extends React.Component {
       this.audio.pause();
       this.setState({ audio_play: false });
     }
-  }
-  newGame() {
+  };
+  newGame = () => {
     this.setState({
       player: !this.state.first ? "X" : "O",
       first: !this.state.first,
@@ -145,8 +139,8 @@ export default class App extends React.Component {
       gameOver: false,
       win_line: [],
     });
-  }
-  updatePoint() {
+  };
+  updatePoint = () => {
     this.setState({
       points: {
         X:
@@ -159,11 +153,11 @@ export default class App extends React.Component {
             : this.state.points.O,
       },
     });
-  }
-  componentDidMount() {
+  };
+  componentDidMount = () => {
     this.setState({ player: this.state.first ? "X" : "O" });
-  }
-  render() {
+  };
+  render = () => {
     const gameOverMsg =
       this.state.player === "Tie" ? "Tie" : `Winner:  ${this.state.player}`;
     const end = (
@@ -226,5 +220,5 @@ export default class App extends React.Component {
         </h3>
       </div>
     );
-  }
+  };
 }
