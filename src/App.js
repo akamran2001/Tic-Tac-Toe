@@ -24,7 +24,7 @@ export default class App extends React.Component {
   /**
    * Update the state of the game after every input
    */
-  gameUpdate = async () => {
+  gameUpdate = () => {
     /**
      * Cells which indicate a vertical, horizontal, or diagonal line
      */
@@ -55,35 +55,40 @@ export default class App extends React.Component {
      * Game end when someone has won or the board is full
      * The next player gets picked as the opposite player if the game isn't over yet
      */
-    await this.setState({
-      player: boardFull && !win ? "Tie" : this.state.player,
-      gameOver: win || boardFull,
-      win_line: win ? winner : this.state.win_line,
-    });
-
-    if (!this.state.gameOver) {
-      this.setState({ player: this.state.player === "X" ? "O" : "X" }); //Only switch player after state of game set
-    } else {
-      this.updatePoint();
-    }
+    this.setState(
+      {
+        player: boardFull && !win ? "Tie" : this.state.player,
+        gameOver: win || boardFull,
+        win_line: win ? winner : this.state.win_line,
+      },
+      () => {
+        if (!this.state.gameOver) {
+          this.setState({ player: this.state.player === "X" ? "O" : "X" }); //Only switch player after state of game set
+        } else {
+          this.updatePoint();
+        }
+      }
+    );
   };
   /**
    * Handle the user clicking on a cell to input their move
    * @param  {"event"} e The onClick event
    */
-  play = async (e) => {
+  play = (e) => {
     const cell = e.target;
     const cell_id = parseInt(cell.id);
     const clicked = cell.getAttribute("clicked");
     if (clicked === "false" && this.state.gameOver !== true) {
       cell.setAttribute("clicked", "true");
-      await this.setState({
-        squares: this.state.squares
-          .slice(0, cell_id)
-          .concat(this.state.player) //Replace selected cell with player character
-          .concat(this.state.squares.slice(cell_id + 1)),
-      });
-      this.gameUpdate(); //Only update game after state of board set
+      this.setState(
+        {
+          squares: this.state.squares
+            .slice(0, cell_id)
+            .concat(this.state.player) //Replace selected cell with player character
+            .concat(this.state.squares.slice(cell_id + 1)),
+        },
+        this.gameUpdate
+      );
     }
   };
   /**
